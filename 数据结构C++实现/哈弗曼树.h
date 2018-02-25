@@ -44,32 +44,60 @@ private:
 };
 
 template<typename T>
-void Huffman<T>::creat(T a[], int size)
+inline void Huffman<T>::preOrder()
 {
-	for (int i = 0; i < size ; ++i)
-	{
-		HuffmanNode<T>* ptr = new HuffmanNode<T>(a[i], nullptr, nullptr);
-		forest.push_back(ptr);
-	}
-	for (int i = 0; i < size - 1; ++i)
-	{
-		//lambda确定排序方式 按照key排
-		sort(forest.begin(), forest.end(), [](HuffmanNode<T>* a, HuffmanNode<T>* b) {return a->key < b->key; });
-		//选其中最小的两个节点构建新树，这两个节点分别是左右子树。
-		HuffmanNode<T>* node = new HuffmanNode<T>(forest[0]->key + forest[1]->key, forest[0], forest[1]);
-		forest.push_back(node);
-		forest.pop_front();
-		forest.pop_front();
-	}
-	root = forest.front();
-	forest.clear(); //排完了 清空森林。
+	preOrder(root);
+}
 
+template<typename T>
+inline void Huffman<T>::inOrder()
+{
+	inOrder(root);
+}
+
+template<typename T>
+inline void Huffman<T>::postOrder()
+{
+	postOrder(root);
 }
 
 template<typename T>
 void Huffman<T>::print()
 {
 	print(root);
+}
+
+template<typename T>
+inline void Huffman<T>::preOrder(HuffmanNode<T>* pnode)
+{
+	if (pnode != nullptr)
+	{
+		cout << pnode->key << endl;
+		preOrder(pnode->lchild);
+		preOrder(pnode->rchild);
+	}
+}
+
+template<typename T>
+inline void Huffman<T>::inOrder(HuffmanNode<T>* pnode)
+{
+	if (pnode != nullptr)
+	{
+		inOrder(pnode->lchild);
+		cout << pnode->key << endl;
+		inOrder(pnode->rchild);
+	}
+}
+
+template<typename T>
+inline void Huffman<T>::postOrder(HuffmanNode<T>* pnode)
+{
+	if (pnode != nullptr)
+	{
+		postOrder(pnode->lchild);
+		postOrder(pnode->rchild);
+		cout << pnode->key << endl;
+	}
 }
 
 template<typename T>
@@ -91,6 +119,31 @@ void Huffman<T>::print(HuffmanNode<T>* pnode)
 }
 
 template<typename T>
+inline void Huffman<T>::creat(T a[], int size)
+{
+	for (int i = 0; i < size; ++i)
+	{
+		HuffmanNode<T>* ptr = new HuffmanNode<T>(a[i], nullptr, nullptr);
+		forest.push_back(ptr);
+	}
+
+	for(int i=0;i<size-1;++i)
+	{	
+		sort(forest.begin(), forest.end(), [](HuffmanNode<T>* l, HuffmanNode<T>* r) {return l->key < r->key; });
+		HuffmanNode<T>* pnode = new HuffmanNode<T>(forest[0]->key + forest[1]->key, forest[0], forest[1]);
+		forest.push_back(pnode);
+		forest.pop_front();
+		forest.pop_front();
+		//root = pnode;
+	}
+//	root = forest.front();
+	root = forest.back(); //此时forest内仅有一个节点，就是root。
+	forest.clear();
+}
+
+
+
+template<typename T>
 void Huffman<T>::destory()
 {
 	destory(root);
@@ -100,10 +153,8 @@ void Huffman<T>::destory(HuffmanNode<T>* root)
 {
 	if (root != nullptr)
 	{
-		if(root->lchild!=nullptr)
-			destory(root->lchild);
-		if (root->rchild != nullptr)
-			destory(root->rchld);
+		destory(root->lchild);
+		destory(root->rchld);
 		delete root;
 	}
 
