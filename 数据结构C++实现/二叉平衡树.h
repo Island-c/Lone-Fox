@@ -6,8 +6,8 @@ template<typename T>
 struct AVLTreeNode
 {
 	AVLTreeNode(T value, AVLTreeNode<T> *l, AVLTreeNode<T> *r)
-		:key(value), lchild(l), rchild(r) {}
-	AVLTreeNode() :lchild(nullptr), rchild(nullptr) {}
+		:key(value), lchild(l), rchild(r),height(0) {}
+	AVLTreeNode() :lchild(nullptr), rchild(nullptr),height(0) {}
 	T key;  //节点的值
 	int height;	//节点的高度
 	AVLTreeNode<T>* lchild;
@@ -166,7 +166,7 @@ AVLTreeNode<T>* AVLTree<T>::insert(AVLTreeNode<T>* &pnode, T key)
 		}
 	}
 	//重新计算高度
-	pnode->height = max(height(pnode->lchild), height(pnode->rchild)) + 1;
+	pnode->height = max(height(pnode->lchild), height(pnode->rchild)) + 1; //如果左右孩子都为空，则节点高度为1
 	return pnode;
 
 
@@ -178,8 +178,6 @@ void AVLTree<T>::remove(T key)
 {
 	remove(root, key);
 }
-
-
 template<typename T>
 AVLTreeNode<T>* AVLTree<T>::remove(AVLTreeNode<T>* &pnode, T key)
 {
@@ -215,16 +213,11 @@ AVLTreeNode<T>* AVLTree<T>::remove(AVLTreeNode<T>* &pnode, T key)
 					pnode = pnode->lchild;
 				else if (pnode->rchild != nullptr)
 					pnode = pnode->rchild;
+				else pnode = nullptr;
 				delete ptemp;
 			//	return nullptr;
 				return pnode;
-
 			}
-
-
-
-
-
 		}
 		else if (pnode->key < key)
 		{
@@ -395,7 +388,7 @@ AVLTreeNode<T>* AVLTree<T>::maximum(AVLTreeNode<T>* pnode) const
 template<typename T>
 T AVLTree<T>::maximum()
 {
-	AVLTreeNode<T>* presult = manimum(root);
+	AVLTreeNode<T>* presult = maximum(root);
 	if (presult != nullptr)
 		return presult->key;
 }
