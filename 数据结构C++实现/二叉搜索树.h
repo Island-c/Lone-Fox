@@ -1,6 +1,7 @@
 #ifndef _HEAD_H
 #define _HEAD_H
-
+#include<stack>
+#include<deque>
 template<typename T>
 struct BSNode //二叉树的节点
 {
@@ -24,7 +25,7 @@ public:
 	void preOrder();  //前序遍历
 	void inOrder();  //中序遍历
 	void postOrder(); //后序遍历
-//	void layerOrder(); //层次遍历
+	void layerOrder(); //层次遍历
 
 	BSNode<T>* search_recursion(T key); //递归查找
 	BSNode<T>* search_Iterator(T key); //迭代查找
@@ -45,12 +46,12 @@ private:
 private:
 	BSNode<T>* search(BSNode<T>* &p, T key);  //以下是递归使用的接口
 	void remove(BSNode<T>* p, T key); 
-	void preOrder(BSNode<T>* p);
-	void inOrder(BSNode<T> *p);
-	void postOrder(BSNode<T>* p);
-	T search_minimum(BSNode<T> *p);
-	T search_maximum(BSNode<T>* p);
-	void destory(BSNode<T> * &p);
+void preOrder(BSNode<T>* p);
+void inOrder(BSNode<T> *p);
+void postOrder(BSNode<T>* p);
+T search_minimum(BSNode<T> *p);
+T search_maximum(BSNode<T>* p);
+void destory(BSNode<T> * &p);
 };
 
 
@@ -65,9 +66,9 @@ void BSTree<T>::insert(T key)
 		if (key < pnode->value)
 			pnode = pnode->lchild;
 		else if (key > pnode->value)
-//		if (key > pnode->value) //error! 如果上一个if成功执行，pnode会发生改变。
+			//		if (key > pnode->value) //error! 如果上一个if成功执行，pnode会发生改变。
 			pnode = pnode->rchild;
-		else 
+		else
 			break;  //遇到相同key时不继续查找...
 	}
 	pnode = new BSNode<T>(key);
@@ -96,7 +97,31 @@ void BSTree<T>::preOrder()
 {
 	preOrder(root);
 }
+//非递归先序遍历
+template<typename T>
+void BSTree<T>::preOrder(BSNode<T> * p)
+{
+	std::stack<BSNode<T>*> store;
+	while (p != nullptr || !store.empty())
+	{
+		while (p != nullptr)
+		{
+			cout << p->value << endl;
+			store.push(p);
+			p = p->lchild;
+		}
+		if (!store.empty())
+		{
+			p = store.top();
+			store.pop();
+			p = p->rchild;
+		}
 
+	}
+
+}
+
+/*
 template<typename T>
 void BSTree<T>::preOrder(BSNode<T> *p)
 {
@@ -107,6 +132,7 @@ void BSTree<T>::preOrder(BSNode<T> *p)
 		preOrder(p->rchild);
 	}
 }
+*/
 
 //中序遍历
 template<typename T>
@@ -114,6 +140,31 @@ void BSTree<T>::inOrder()
 {
 	inOrder(root);
 }
+//中序遍历非递归
+template<typename T>
+void BSTree<T>::inOrder(BSNode<T> * p)
+{
+	std::stack<BSNode<T>*> s;
+	while (p != nullptr || !s.empty())
+	{
+
+		while (p != nullptr)
+		{
+			s.push(p);
+			p = p->lchild;
+		}
+		if (!s.empty())
+		{
+			p = s.top();
+			s.pop();
+			cout << p->value << endl;
+			p = p->rchild;
+		}
+	}
+
+}
+
+/*
 template<typename T>
 void BSTree<T>::inOrder(BSNode<T> *p)
 {
@@ -124,6 +175,7 @@ void BSTree<T>::inOrder(BSNode<T> *p)
 		inOrder(p->rchild);
 	}
 }
+*/
 
 //后序遍历
 
@@ -133,6 +185,37 @@ void BSTree<T>::postOrder()
 	postOrder(root);
 }
 
+
+
+template<typename T>
+void BSTree<T>::postOrder(BSNode<T>*p)
+{
+	stack<BSNode<T>*> s;
+	BSNode<T>* cur;
+	BSNode<T>* pre = nullptr;
+	s.push(p);
+	while (!s.empty())
+	{
+		cur = s.top(); //cur指向当前节点
+		if ((cur->lchild == nullptr && cur->rchild == nullptr) // 当左右孩子都不存在时，就可以访问根节点了。
+			|| (pre != nullptr && (pre == cur->lchild || pre == cur->rchild))) //pre是cur的子节点，说明两个子节点都访问过了，就可以访问根节点
+		{
+			cout << cur->value << endl;
+			s.pop();
+			pre = cur; //pre记录上一次遍历到的节点
+		}
+		else //否则，先把右孩子入栈，再入左孩子。就可以先访问左孩子再访问右孩子了。
+		{
+			if (cur->rchild != nullptr)
+				s.push(cur->rchild);
+			if (cur->lchild != nullptr)
+				s.push(cur->lchild);
+		}
+	}
+
+}
+
+/*
 template<typename T>
 void BSTree<T>::postOrder(BSNode<T> *p)
 {
@@ -143,7 +226,29 @@ void BSTree<T>::postOrder(BSNode<T> *p)
 		cout << p->value << endl;
 	}
 }
+*/
 
+//层次遍历
+template<typename T>
+void BSTree<T>::layerOrder()
+{
+	BSNode<T>* p = root;
+	if (p == nullptr)
+		return;
+	std::deque<BSNode<T>*> d;
+	d.push_back(p);
+	while (!d.empty())
+	{
+		BSNode<T>* pnode = d.front();
+		d.pop_front();
+		cout << pnode->value << endl;
+
+		if (pnode->lchild != nullptr)
+			d.push_back(pnode->lchild);
+		if (pnode->rchild!= nullptr)
+			d.push_back(pnode->rchild);
+	}
+}
 
 //寻找前驱节点
 
