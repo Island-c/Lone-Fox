@@ -11,7 +11,7 @@ void print(T a[], int size)
 
 
 template<typename T>
-void swap(T a[], int x, int y) //如果x等于y ，该方法失效。
+void swap(T a[], int x, int y) //涓�鑸儏鍐典笅涓嶉渶瑕侀澶栧垎閰嶇┖闂寸殑swap
 {
 	if (x != y)
 	{
@@ -28,7 +28,7 @@ void swap(T a[], int x, int y) //如果x等于y ，该方法失效。
 
 }
 
-//快速排序
+//蹇帓
 template<typename T>
 void QuickSort(T a[], int left, int right)
 {
@@ -36,20 +36,20 @@ void QuickSort(T a[], int left, int right)
 	{
 		int i = left;
 		int j = right;
-		int x = a[left];//基准值
+		int x = a[left];//鍩哄噯
 		while (i < j)
 		{
 			while (i < j && a[j] >= x)
 				j--;
 			if (i < j)
-				a[i++] = a[j]; 
+				a[i++] = a[j];
 			while (i < j && a[i] < x)
 				i++;
 			if (i < j)
 				a[j--] = a[i];
 		}
 		a[i] = x;
-		//分治递归
+		//鍒嗘不
 		QuickSort(a, left, i - 1);
 		QuickSort(a, i + 1, right);
 
